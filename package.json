@@ -1,45 +1,45 @@
 {
-  "name": "solid-konva",
-  "version": "0.1.6",
+  "name": "solid-konva2",
+  "version": "2.0.0",
   "description": "Solid.js bindings for Konva.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lawrencecchen/solid-konva.git"
-  },
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@rollup/plugin-typescript": "^8.3.3",
-    "@types/node": "^18.0.6",
-    "@unocss/preset-mini": "^0.44.2",
-    "@unocss/vite": "^0.44.2",
-    "tslib": "^2.4.0",
-    "typescript": "^4.7.4",
-    "vite": "^3.0.0",
-    "vite-plugin-solid": "^2.3.0"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@solid-primitives/resize-observer": "^2.0.2",
-    "@unocss/reset": "^0.44.5",
-    "konva": "^8.3.10",
-    "solid-js": "^1.4.7"
+    "@solid-primitives/resize-observer": "^2.1.0",
+    "konva": "^9.3.20",
+    "solid-js": "^1.9.5"
   },
-  "type": "module",
+  "devDependencies": {
+    "unocss": "66.1.0-beta.11",
+    "vite": "^6.3.1",
+    "vite-plugin-solid": "^2.11.6"
+  },
   "files": [
     "dist"
   ],
-  "main": "./dist/solid-konva.umd.cjs",
-  "module": "./dist/solid-konva.js",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./lib/types.ts",
   "exports": {
     ".": {
-      "import": "./dist/solid-konva.js",
-      "require": "./dist/solid-konva.umd.cjs"
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
     }
   },
-  "types": "./dist/index.d.ts",
-  "author": "Lawrence Chen"
+  "stackblitz": {
+    "installDependencies": false,
+    "startCommand": "node .stackblitz.mjs && npm install && npm run dev"
+  },
+  "author": "Lawrence Chen",
+  "contributors": [
+    {
+      "name": "Liam Mitchell",
+      "url": "https://github.com/LiamKarlMitchell"
+    }
+  ],
+  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971"
 }

@@ -206,22 +206,34 @@ function createEntity<T>(shapeName: keyof typeof Konva) {
   }
   return Entity;
 }
-export const Group = createEntity("Group");
-export const Rect = createEntity("Rect");
+
+// Animation
+export const Arc = createEntity("Arc");
+export const Arrow = createEntity("Arrow");
+// Canvas
 export const Circle = createEntity("Circle");
+// Container
+// Context
 export const Ellipse = createEntity("Ellipse");
-export const Wedge = createEntity("Wedge");
-export const Line = createEntity("Line");
-export const Sprite = createEntity("Sprite");
+// FastLayer
+export const Group = createEntity("Group");
 export const Image = createEntity("Image");
+// Label
+// Layer handled already
+export const Line = createEntity("Line");
+// Node
+export const Path = createEntity("Path");
+export const Rect = createEntity("Rect");
+export const RegularPolygon = createEntity("RegularPolygon");
+export const Ring = createEntity("Ring");
+export const Shape = createEntity("Shape");
+export const Sprite = createEntity("Sprite");
+// Stage
+export const Star = createEntity("Star");
+export const Tag = createEntity("Tag");
 export const Text = createEntity("Text");
 export const TextPath = createEntity("TextPath");
-export const Star = createEntity("Star");
-export const Ring = createEntity("Ring");
-export const Arc = createEntity("Arc");
-export const Tag = createEntity("Tag");
-export const Path = createEntity("Path");
-export const RegularPolygon = createEntity("RegularPolygon");
-export const Arrow = createEntity("Arrow");
-export const Shape = createEntity("Shape");
+// Transform
 export const Transformer = createEntity<TransformerEvents>("Transformer");
+// Tween
+export const Wedge = createEntity("Wedge");
