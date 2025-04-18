@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "license": "MIT",
   "dependencies": {
     "@solid-primitives/resize-observer": "^2.1.0",
     "konva": "^9.3.20",
