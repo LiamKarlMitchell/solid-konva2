@@ -10,6 +10,12 @@ function App() {
   const [circlePos, setCirclePos] = createSignal({ x: 200, y: 200 });
   const [rectPos, setRectPos] = createSignal({ x: 100, y: 100 });
 
+  const [show3, setShow3] = createSignal(true);
+
+  setInterval(() => {
+    setShow3(!show3());
+  }, 500);
+
   return (
     <>
       <div class="h-screen">
@@ -97,6 +103,36 @@ function App() {
                   draggable: true,
                 }}
                 onDragMove={(e) => setRectPos(e.target.getPosition())}
+              />
+            </Show>
+            <Show
+              when={show3()}
+              fallback={
+                <Rect
+                  {...{
+                    x: 300,
+                    y: 200,
+                    width: 100,
+                    height: 50,
+                    fill: "yellow",
+                    stroke: "black",
+                    strokeWidth: 4,
+                    draggable: false,
+                  }}
+                />
+              }
+            >
+              <Rect
+                {...{
+                  x: 300,
+                  y: 200,
+                  width: 100,
+                  height: 50,
+                  fill: "green",
+                  stroke: "black",
+                  strokeWidth: 4,
+                  draggable: false,
+                }}
               />
             </Show>
           </Layer>

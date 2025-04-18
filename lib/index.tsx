@@ -1,8 +1,6 @@
 import { createElementSize } from "@solid-primitives/resize-observer";
 import Konva from "konva";
 import { Layer as KLayer, LayerConfig } from "konva/lib/Layer";
-import { ShapeConfig } from "konva/lib/Shape";
-import { Stage as KStage, StageConfig } from "konva/lib/Stage";
 import {
   createContext,
   createEffect,
@@ -14,27 +12,32 @@ import {
 import type { JSX } from "solid-js/jsx-runtime";
 import { KonvaEvents, TransformerEvents } from "./types";
 
-function createStage(props: Omit<StageConfig, "container">) {
-  const [containerRef, setContainerRef] = createSignal<HTMLDivElement>();
+function createStage(props: Omit<Konva.StageConfig, "container">) {
+  const [containerRef, setContainerRef] = createSignal<HTMLDivElement | undefined>();
   const size = createElementSize(containerRef);
-  const [stage, setStage] = createSignal<KStage>();
+  const [stage, setStage] = createSignal<Konva.Stage | undefined>();
 
-  onMount(() => {
-    setStage(
-      new Konva.Stage({
-        height: size.width,
-        width: size.height,
-        container: containerRef(),
-        ...props,
-      })
-    );
+  createEffect(() => {
+    const container = containerRef();
+    if (container && !stage()) {
+      setStage(
+        new Konva.Stage({
+          height: size.width || 0,
+          width: size.height || 0,
+          container: container,
+          ...props,
+        })
+      );
+    }
   });
 
   createEffect(() => {
-    stage()?.setAttrs({
-      width: size.width,
-      height: size.height,
-    });
+    if (stage()) {
+      stage()?.setAttrs({
+        width: size.width || 0,
+        height: size.height || 0,
+      });
+    }
   });
 
   onCleanup(() => {
@@ -43,13 +46,14 @@ function createStage(props: Omit<StageConfig, "container">) {
 
   return {
     ...props,
-    ref: setContainerRef,
+    ref: (el: HTMLDivElement | null) => setContainerRef(el || undefined),
     containerRef,
     stage,
   };
 }
 
-const StageContext = createContext<ReturnType<typeof createStage>>(null);
+const StageContext = createContext<ReturnType<typeof createStage> | undefined>();
+
 export function StageContextProvider(props: {
   children: JSX.Element;
   stageProps: ReturnType<typeof createStage>;
@@ -60,24 +64,26 @@ export function StageContextProvider(props: {
     </StageContext.Provider>
   );
 }
-export function useStage() {
+
+export function useStage(): Konva.Stage {
   const stage = useContext(StageContext);
   return stage;
 }
 
 export function Stage(
-  props: JSX.HTMLAttributes<HTMLDivElement> & Omit<StageConfig, "container">
+  props: JSX.HTMLAttributes<HTMLDivElement> & Omit<Konva.StageConfig, "container">
 ) {
   const stageProps = createStage({ ...props });
 
   return (
-    <div ref={stageProps.ref} {...props}>
+    <div ref={(el) => stageProps.ref(el || undefined)} {...props}>
       <StageContextProvider stageProps={stageProps}>
         {props.children}
       </StageContextProvider>
     </div>
   );
 }
+
 
 const LayerContext = createContext<{ layer: KLayer }>();
 function useLayer() {
@@ -97,7 +103,6 @@ export function Layer(props: { children?: JSX.Element } & LayerConfig) {
   });
 
   onCleanup(() => {
-    console.log("murp");
     layer.destroy();
   });
   return (
@@ -121,7 +126,7 @@ const propsToSkip = {
 };
 
 function createEntity<T>(shapeName: keyof typeof Konva) {
-  function Entity(props: ShapeConfig & KonvaEvents & T) {
+  function Entity(props: Konva.ShapeConfig & KonvaEvents & T) {
     let prevProps = {};
     const [entity, setEntity] = createSignal<Konva.Shape>(null);
     const layer = useLayer();
@@ -192,15 +197,13 @@ function createEntity<T>(shapeName: keyof typeof Konva) {
         }
       }
       for (var eventName in newEvents) {
-        // console.log(eventName);
         entity()?.on(eventName, newEvents[eventName]);
       }
       prevProps = props;
     });
 
     onCleanup(() => {
-      entity().destroy();
-      console.log("destroyed");
+      entity()?.destroy();
     });
     return <>{/* shape */}</>;
   }
@@ -217,9 +220,79 @@ export const Circle = createEntity("Circle");
 export const Ellipse = createEntity("Ellipse");
 // FastLayer
 export const Group = createEntity("Group");
-export const Image = createEntity("Image");
+
+const Image1x1Transparent = new Image();
+Image1x1Transparent.src = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+
+const Image1x1Error = new Image();
+Image1x1Error.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+
+
+export function createImageSignal(
+  initialSrc?: string,
+  options?: { 
+    element?: HTMLImageElement,
+    onLoading?: string;
+    onError?: string,
+    /***
+     * Set the cross origin behaviour to use images from other domains.
+     * Empty '' is same as anonymous and is the default.
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images#using_images_from_other_domains
+     */
+    crossOrigin?: '' | 'anonymous' | 'use-credentials' }
+) {
+  const [imageLoaded, setImageLoaded] = createSignal(false);
+  const [image, setImage] = createSignal<HTMLImageElement | null>(options?.element ?? null);
+
+  const newImage: HTMLImageElement = options?.element ?? new Image();
+  //setImage(Image1x1Transparent);
+
+  // TODO: A way to have a default loading image? Maybe a 1x1 transparent pixel?
+  //newImage.src = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+
+  if (options) {
+    newImage.crossOrigin = options.crossOrigin ?? '';
+  }
+
+  if (newImage.loading) {
+    setImageLoaded(false);
+  }
+
+  newImage.onload = () => {
+    setImageLoaded(true);
+    setImage(newImage);
+  };
+
+  newImage.onerror = (err) => {
+    if (options?.onError) {
+      console.error(options.onError);
+    }
+    setImageLoaded(false);
+    setImage(Image1x1Error);
+  };
+
+  const setImageSrc = (src?: string) => {
+    setImageLoaded(false);
+    if (options?.onLoading) {
+      console.log(options.onLoading);
+    } else {
+      setImage(Image1x1Transparent);
+    }
+    if (src) {
+      newImage.src = src;
+    }
+  };
+
+  if (initialSrc) {
+    setImageSrc(initialSrc);
+  }
+
+  return [image, setImageSrc] as const;
+}
+
+export const Image2D = createEntity("Image");
 // Label
-// Layer handled already
+// Layer
 export const Line = createEntity("Line");
 // Node
 export const Path = createEntity("Path");

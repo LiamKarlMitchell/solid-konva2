@@ -1,12 +1,13 @@
 {
   "name": "solid-konva2",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Solid.js bindings for Konva.js",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "watch-build": "nodemon --watch lib --ext tsx,ts --exec 'pnpm build'"
   },
   "license": "MIT",
   "dependencies": {
@@ -22,13 +23,13 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/index.umd.js",
-  "module": "./dist/index.es.js",
+  "main": "./dist/solid-konva2.umd.js",
+  "module": "./dist/solid-konva2.es.js",
   "types": "./lib/types.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.umd.js"
+      "import": "./dist/solid-konva2.es.js",
+      "require": "./dist/solid-konva2.umd.js"
     }
   },
   "stackblitz": {

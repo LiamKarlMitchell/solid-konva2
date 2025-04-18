@@ -13,6 +13,7 @@ import { Circle, Layer, Rect, Stage } from "solid-konva";
 const App: Component = () => {
   const [x, setX] = createSignal(50);
   const [y, setY] = createSignal(50);
+
   return (
     <div>
       <input
@@ -61,6 +62,41 @@ const App: Component = () => {
 };
 
 export default App;
+```
+
+
+### Working with Image
+
+Currently experimental have added createImageSignal to load an image from src string or base64 content.
+
+On error it currently displays a red pixel.
+On loading it should use a transparent pixel.
+
+```tsx
+import { Component, createSignal } from "solid-js";
+import { Image2D, createImageSignal, Layer, Stage } from "solid-konva";
+
+const App: Component = () => {
+  const [image, setImageSrc] = createImageSignal();
+  setImageSrc('https://picsum.photos/200/300');
+
+  return (
+    <>
+      <Stage style={{ height: "100vh" }}>
+      <Layer>
+      <Image2D
+      {...{
+        x: rectPos().x + 200,
+        y: rectPos().y + 200,
+        image: image(),
+        width: image()?.nativeWidth, // Optional?
+        height: image()?.nativeHeight, // Optional?
+      }} />
+    </Layer>
+    </Stage>
+    </>
+  );
+};
 ```
 
 ### `pnpm dev` or `npm dev` or `npm start`
